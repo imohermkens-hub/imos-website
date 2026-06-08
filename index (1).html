@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Imo's — AI-ondersteunde huurdersapplicatie voor MKB-vastgoedbeheerders</title>
+<meta name="description" content="Een onafhankelijke, AVG-conforme huurdersapplicatie met AI-meldingsroute, chatbot en beheerdersdashboard. Gevalideerd bij Lemon Suites." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     IMO'S — productwebsite
+     Brandnaam staat in de nav, de hero-telefoon en de footer.
+     Lemon Suites blijft staan als referentieklant / testomgeving.
+     ============================================================ */
+
+  :root {
+    --bg-dark: #1a1714;
+    --bg-dark-2: #232019;
+    --bg-dark-3: #2c2820;
+    --gold: #edc23b;
+    --gold-deep: #e0b22e;
+    --gold-soft: #f4d978;
+    --cream: #f5f3ee;
+    --cream-2: #efece4;
+    --white: #ffffff;
+    --ink: #1a1714;
+    --muted-dark: #a89e8e;
+    --muted-light: #6f665a;
+    --green: #2f8a5f;
+    --green-bg: #e3f1e8;
+    --border-light: #e7e2d8;
+    --border-dark: #3a352c;
+    --radius: 20px;
+    --radius-sm: 14px;
+    --shadow-card: 0 1px 2px rgba(26,23,20,.04), 0 12px 32px rgba(26,23,20,.07);
+    --shadow-soft: 0 1px 2px rgba(26,23,20,.04), 0 6px 18px rgba(26,23,20,.05);
+    --maxw: 1140px;
+    --ease: cubic-bezier(.2,.7,.2,1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: 'Hanken Grotesk', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .serif {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--gold-deep);
+  }
+  .eyebrow.on-dark { color: var(--gold); }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: inherit; font-weight: 700; font-size: 15px;
+    padding: 14px 26px; border-radius: 100px; cursor: pointer;
+    border: none; transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease);
+    white-space: nowrap;
+  }
+  .btn-gold { background: var(--gold); color: var(--ink); box-shadow: 0 6px 20px rgba(237,194,59,.35); }
+  .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(237,194,59,.45); background: var(--gold-soft); }
+  .btn-ghost-dark { background: transparent; color: var(--white); border: 1.5px solid var(--border-dark); }
+  .btn-ghost-dark:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+  .btn-ghost-light { background: transparent; color: var(--ink); border: 1.5px solid var(--border-light); }
+  .btn-ghost-light:hover { border-color: var(--ink); transform: translateY(-2px); }
+  .btn .arr { transition: transform .25s var(--ease); }
+  .btn:hover .arr { transform: translateX(3px); }
+
+  /* ---------- Nav ---------- */
+  header.nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(245,243,238,.82);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s var(--ease), background .3s var(--ease);
+  }
+  header.nav.scrolled { border-color: var(--border-light); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .brand-badge {
+    width: 38px; height: 38px; border-radius: 11px; background: var(--gold);
+    display: grid; place-items: center; font-family: 'Fraunces', serif;
+    font-weight: 700; font-size: 16px; color: var(--ink);
+    box-shadow: 0 4px 12px rgba(237,194,59,.4);
+  }
+  .brand-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 21px; letter-spacing: -0.01em; }
+  .nav-links { display: flex; align-items: center; gap: 34px; }
+  .nav-links a.lnk { font-size: 15px; font-weight: 500; color: var(--muted-light); transition: color .2s; }
+  .nav-links a.lnk:hover { color: var(--ink); }
+  .nav-cta { padding: 11px 22px; font-size: 14px; }
+  .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; background: var(--bg-dark); color: var(--white);
+    border-radius: 0 0 36px 36px; overflow: hidden;
+    padding: 92px 0 104px;
+  }
+  .hero .glow {
+    position: absolute; top: -160px; right: -120px;
+    width: 620px; height: 620px; border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(237,194,59,.22), rgba(237,194,59,.06) 45%, transparent 68%);
+    pointer-events: none;
+  }
+  .hero .glow-2 {
+    position: absolute; bottom: -220px; left: -160px;
+    width: 520px; height: 520px; border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(237,194,59,.10), transparent 65%);
+    pointer-events: none;
+  }
+  .hero-grid { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
+  .hero h1 { font-size: clamp(38px, 5.4vw, 64px); margin: 18px 0 22px; }
+  .hero h1 .hl { color: var(--gold); }
+  .hero p.lead { font-size: 18.5px; color: var(--muted-dark); max-width: 520px; margin-bottom: 34px; }
+  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-trust { display: flex; gap: 26px; margin-top: 38px; flex-wrap: wrap; }
+  .hero-trust .ti { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--muted-dark); }
+  .hero-trust .ti svg { flex-shrink: 0; }
+
+  /* ---------- Phone mockup ---------- */
+  .phone-stage { display: flex; justify-content: center; position: relative; }
+  .phone {
+    width: 290px; background: #100e0b; border-radius: 40px; padding: 12px;
+    box-shadow: 0 30px 70px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.05);
+    position: relative;
+  }
+  .phone .screen { background: var(--cream); border-radius: 30px; overflow: hidden; color: var(--ink); }
+  .phone .ph-top {
+    background: var(--bg-dark-2); padding: 22px 20px 24px; position: relative; overflow: hidden;
+    border-radius: 30px 30px 22px 22px;
+  }
+  .phone .ph-top .pglow {
+    position: absolute; top: -60px; right: -40px; width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(237,194,59,.18), transparent 65%);
+  }
+  .ph-brand { display: flex; align-items: center; gap: 8px; position: relative; }
+  .ph-brand .b { font-family:'Fraunces',serif; font-weight: 600; font-size: 15px; color: #fff; }
+  .ph-brand .b em { color: var(--gold); font-style: normal; }
+  .ph-hello { font-family:'Fraunces',serif; font-weight: 600; font-size: 21px; color:#fff; margin-top: 14px; position: relative; }
+  .ph-sub { font-size: 12px; color: var(--muted-dark); margin-top: 3px; position: relative; }
+  .ph-body { padding: 16px; }
+  .ph-card-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    border-radius: 16px; padding: 15px 16px; color: var(--ink);
+  }
+  .ph-card-gold .lbl { font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; opacity: .7; }
+  .ph-card-gold .home { font-family:'Fraunces',serif; font-weight: 700; font-size: 17px; margin-top: 3px; }
+  .ph-card-gold .zip { font-size: 11px; opacity: .75; }
+  .ph-card-gold .tag { display:inline-block; margin-top: 8px; background: rgba(26,23,20,.14); font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 100px; }
+  .ph-q { font-family:'Fraunces',serif; font-weight: 600; font-size: 14px; margin: 16px 2px 10px; }
+  .ph-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ph-tile { background:#fff; border-radius: 14px; padding: 12px; box-shadow: var(--shadow-soft); }
+  .ph-tile .ico { width: 26px; height: 26px; border-radius: 8px; display:grid; place-items:center; margin-bottom: 8px; }
+  .ph-tile .tt { font-weight: 700; font-size: 12px; line-height: 1.25; }
+  .ph-tile .td { font-size: 10px; color: var(--muted-light); margin-top: 3px; line-height: 1.3; }
+  .ph-tile .go { color: var(--gold-deep); font-size: 13px; font-weight: 800; margin-top: 8px; }
+
+  /* ---------- Sections ---------- */
+  section { padding: 96px 0; scroll-margin-top: 84px; }
+  .sec-head { max-width: 680px; margin-bottom: 52px; }
+  .sec-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+  .sec-head h2 { font-size: clamp(30px, 3.8vw, 44px); margin: 14px 0 16px; }
+  .sec-head p { font-size: 18px; color: var(--muted-light); }
+  .on-dark .sec-head p { color: var(--muted-dark); }
+
+  /* problem cards */
+  .cards-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+  .pcard {
+    background: var(--white); border: 1px solid var(--border-light); border-radius: var(--radius);
+    padding: 30px 26px; box-shadow: var(--shadow-soft); transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+  }
+  .pcard:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); }
+  .pcard .big { font-family:'Fraunces',serif; font-weight: 700; font-size: 40px; color: var(--ink); line-height: 1; }
+  .pcard .big small { font-size: 18px; color: var(--muted-light); font-weight: 600; }
+  .pcard h3 { font-size: 19px; margin: 14px 0 8px; }
+  .pcard p { font-size: 15px; color: var(--muted-light); }
+
+  /* solution */
+  .solution { background: var(--cream-2); }
+  .feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+  .fcard {
+    background: var(--white); border-radius: var(--radius); padding: 30px 28px;
+    box-shadow: var(--shadow-soft); border: 1px solid var(--border-light);
+    transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+    display: flex; flex-direction: column; min-height: 280px;
+  }
+  .fcard:hover { transform: translateY(-5px); box-shadow: var(--shadow-card); }
+  .fcard .ficon {
+    width: 52px; height: 52px; border-radius: 14px; background: var(--bg-dark);
+    display: grid; place-items: center; margin-bottom: 20px;
+  }
+  .fcard h3 { font-size: 21px; margin-bottom: 10px; }
+  .fcard p { font-size: 15px; color: var(--muted-light); flex: 1; }
+  .fcard .more { margin-top: 18px; color: var(--gold-deep); font-weight: 700; font-size: 14px; display:flex; align-items:center; gap:6px; }
+
+  .pillrow { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 38px; justify-content: center; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 9px; background: var(--white);
+    border: 1px solid var(--border-light); border-radius: 100px; padding: 11px 20px;
+    font-size: 14px; font-weight: 600; box-shadow: var(--shadow-soft);
+  }
+  .pill svg { color: var(--green); }
+
+  /* results (dark) */
+  .results { background: var(--bg-dark); color: var(--white); border-radius: 36px; overflow: hidden; position: relative; }
+  .results .glow {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 760px; height: 760px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(237,194,59,.10), transparent 62%); pointer-events: none;
+  }
+  .results .inner { position: relative; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
+  .stat {
+    background: var(--bg-dark-2); border: 1px solid var(--border-dark); border-radius: var(--radius);
+    padding: 30px 24px; transition: transform .3s var(--ease), border-color .3s var(--ease);
+  }
+  .stat:hover { transform: translateY(-4px); border-color: var(--gold); }
+  .stat .num { font-family:'Fraunces',serif; font-weight: 700; font-size: 48px; color: var(--gold); line-height: 1; }
+  .stat .lab { font-size: 14.5px; color: #efeae0; margin-top: 12px; font-weight: 600; }
+  .stat .was { font-size: 13px; color: var(--muted-dark); margin-top: 5px; }
+  .quote {
+    margin-top: 44px; background: var(--bg-dark-2); border-left: 3px solid var(--gold);
+    border-radius: 4px var(--radius) var(--radius) 4px; padding: 30px 34px; max-width: 780px;
+  }
+  .quote p { font-family:'Fraunces',serif; font-size: 22px; line-height: 1.4; color: #fff; }
+  .quote .src { font-family:'Hanken Grotesk',sans-serif; font-size: 14px; color: var(--muted-dark); margin-top: 16px; font-weight: 600; }
+  .results .foot { font-size: 13px; color: var(--muted-dark); margin-top: 30px; }
+
+  /* how + pricing */
+  .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-bottom: 70px; }
+  .step { position: relative; padding: 4px 6px; }
+  .step .n {
+    width: 40px; height: 40px; border-radius: 11px; background: var(--gold);
+    display:grid; place-items:center; font-family:'Fraunces',serif; font-weight:700; font-size: 18px; color: var(--ink); margin-bottom: 16px;
+  }
+  .step h3 { font-size: 19px; margin-bottom: 7px; }
+  .step p { font-size: 15px; color: var(--muted-light); }
+
+  .price-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: stretch; }
+  .price-card {
+    background: var(--bg-dark); color: #fff; border-radius: 28px; padding: 42px 40px; position: relative; overflow: hidden;
+  }
+  .price-card .glow { position:absolute; top:-90px; right:-70px; width:300px; height:300px; border-radius:50%; background: radial-gradient(circle, rgba(237,194,59,.18), transparent 65%); }
+  .price-card .pc-in { position: relative; }
+  .price-card .ptitle { font-size: 22px; color: #fff; margin-bottom: 6px; }
+  .price-card .psub { font-size: 14.5px; color: var(--muted-dark); margin-bottom: 28px; }
+  .price-card .amount { display: flex; align-items: baseline; gap: 8px; }
+  .price-card .amount .v { font-family:'Fraunces',serif; font-weight: 700; font-size: 58px; color: var(--gold); line-height: 1; }
+  .price-card .amount .u { font-size: 16px; color: var(--muted-dark); }
+  .price-card ul { list-style: none; margin-top: 26px; display: grid; gap: 13px; }
+  .price-card li { display: flex; gap: 11px; font-size: 15px; color: #efeae0; align-items: flex-start; }
+  .price-card li svg { color: var(--gold); flex-shrink: 0; margin-top: 3px; }
+  .setup-card {
+    background: var(--white); border: 1px solid var(--border-light); border-radius: 28px; padding: 42px 40px; box-shadow: var(--shadow-card);
+    display: flex; flex-direction: column;
+  }
+  .setup-card h3 { font-size: 22px; margin-bottom: 6px; }
+  .setup-card .ss { font-size: 14.5px; color: var(--muted-light); margin-bottom: 26px; }
+  .tier { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-light); }
+  .tier:last-of-type { border-bottom: none; }
+  .tier .tl { font-size: 15px; font-weight: 600; }
+  .tier .tl span { display:block; font-size: 13px; color: var(--muted-light); font-weight: 400; }
+  .tier .tv { font-family:'Fraunces',serif; font-weight: 700; font-size: 22px; }
+  .price-note { font-size: 13px; color: var(--muted-light); margin-top: 34px; text-align: center; }
+
+  /* about / cta */
+  .about { background: var(--cream-2); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .about h2 { font-size: clamp(28px,3.4vw,40px); margin-bottom: 18px; }
+  .about p { font-size: 16.5px; color: var(--muted-light); margin-bottom: 16px; }
+  .cta-box {
+    background: var(--bg-dark); color: #fff; border-radius: 28px; padding: 46px 44px; position: relative; overflow: hidden;
+  }
+  .cta-box .glow { position:absolute; bottom:-120px; right:-80px; width:340px; height:340px; border-radius:50%; background: radial-gradient(circle, rgba(237,194,59,.16), transparent 65%); }
+  .cta-box .ci { position: relative; }
+  .cta-box h3 { font-size: 27px; color: #fff; margin-bottom: 12px; }
+  .cta-box p { font-size: 15.5px; color: var(--muted-dark); margin-bottom: 26px; }
+  .cta-box .mail { display:inline-flex; align-items:center; gap:9px; font-size: 16px; font-weight: 600; color: var(--gold); margin-top: 22px; }
+
+  /* footer */
+  footer.ft { background: var(--bg-dark); color: var(--muted-dark); padding: 54px 0 38px; }
+  .ft-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 30px; flex-wrap: wrap; padding-bottom: 32px; border-bottom: 1px solid var(--border-dark); }
+  .ft .brand-name { color: #fff; }
+  .ft-tag { font-size: 14px; max-width: 320px; margin-top: 14px; }
+  .ft-links { display: flex; gap: 30px; flex-wrap: wrap; }
+  .ft-links a { font-size: 14.5px; color: var(--muted-dark); transition: color .2s; }
+  .ft-links a:hover { color: var(--gold); }
+  .ft-bottom { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 26px; font-size: 13px; }
+
+  /* reveal animation */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  .stagger > * { opacity: 0; transform: translateY(20px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+  .stagger.in > * { opacity: 1; transform: none; }
+  .stagger.in > *:nth-child(2){ transition-delay:.08s; }
+  .stagger.in > *:nth-child(3){ transition-delay:.16s; }
+  .stagger.in > *:nth-child(4){ transition-delay:.24s; }
+
+  /* hero load anim */
+  .hload { opacity: 0; transform: translateY(22px); animation: rise .8s var(--ease) forwards; }
+  .hload.d1 { animation-delay: .05s; }
+  .hload.d2 { animation-delay: .15s; }
+  .hload.d3 { animation-delay: .25s; }
+  .hload.d4 { animation-delay: .4s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 940px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+    .phone-stage { order: -1; }
+    .cards-3, .feat-grid, .stat-grid, .steps { grid-template-columns: 1fr 1fr; }
+    .price-wrap, .about-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .nav-links.open {
+      display: flex; flex-direction: column; position: absolute; top: 72px; left: 0; right: 0;
+      background: var(--cream); padding: 22px 24px; gap: 18px; border-bottom: 1px solid var(--border-light);
+      box-shadow: var(--shadow-card);
+    }
+    .nav-toggle { display: block; }
+  }
+  @media (max-width: 600px) {
+    section { padding: 70px 0; }
+    .cards-3, .feat-grid, .stat-grid, .steps { grid-template-columns: 1fr; }
+    .hero { padding: 64px 0 80px; }
+    .stat .num { font-size: 42px; }
+    .quote p { font-size: 19px; }
+    .price-card, .setup-card, .cta-box { padding: 34px 26px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .stagger > *, .hload { opacity: 1 !important; transform: none !important; animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand">
+      <span class="brand-badge">Im</span>
+      <span class="brand-name">Imo's</span>
+    </a>
+    <nav class="nav-links" id="navlinks">
+      <a class="lnk" href="#probleem">Probleem</a>
+      <a class="lnk" href="#oplossing">Oplossing</a>
+      <a class="lnk" href="#resultaten">Resultaten</a>
+      <a class="lnk" href="#prijs">Prijs</a>
+      <a class="btn btn-gold nav-cta" href="#contact">Demo aanvragen</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a1714" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero" id="top">
+  <div class="glow"></div>
+  <div class="glow-2"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow on-dark hload">AI-ondersteunde huurdersapplicatie</span>
+      <h1 class="hload d1">Slimmere huurders&shy;communicatie voor <span class="hl">groeiende vastgoedbeheerders</span>.</h1>
+      <p class="lead hload d2">Eén onafhankelijke app die meldingen compleet binnenhaalt, standaardvragen 24/7 zelf beantwoordt en je beheerteam ontlast. AVG-conform en gebouwd op Europese technologie.</p>
+      <div class="hero-cta hload d3">
+        <a href="#contact" class="btn btn-gold">Demo aanvragen <span class="arr">&rarr;</span></a>
+        <a href="#resultaten" class="btn btn-ghost-dark">Bekijk de resultaten</a>
+      </div>
+      <div class="hero-trust hload d4">
+        <div class="ti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#edc23b" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> AVG-conform</div>
+        <div class="ti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#edc23b" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Europese tooling</div>
+        <div class="ti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#edc23b" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Onafhankelijk van je ERP</div>
+      </div>
+    </div>
+
+    <!-- phone mockup -->
+    <div class="phone-stage hload d2">
+      <div class="phone">
+        <div class="screen">
+          <div class="ph-top">
+            <div class="pglow"></div>
+            <div class="ph-brand"><span class="brand-badge" style="width:26px;height:26px;border-radius:8px;font-size:11px;">Im</span><span class="b">Imo<em>'s</em></span></div>
+            <div class="ph-hello">Hoi, bewoner</div>
+            <div class="ph-sub">Welkom in jouw portaal</div>
+          </div>
+          <div class="ph-body">
+            <div class="ph-card-gold">
+              <div class="lbl">Jouw woning</div>
+              <div class="home">Meerkollaan 12</div>
+              <div class="zip">5613 BW &middot; Haagdijk</div>
+              <span class="tag">Huurder</span>
+            </div>
+            <div class="ph-q">Wat wil je doen?</div>
+            <div class="ph-tiles">
+              <div class="ph-tile">
+                <div class="ico" style="background:#231f18;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#edc23b" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h3"/></svg></div>
+                <div class="tt">Mijn meldingen</div>
+                <div class="td">Bekijk je ingediende meldingen</div>
+                <div class="go">&rarr;</div>
+              </div>
+              <div class="ph-tile">
+                <div class="ico" style="background:#fff6da;"><svg width="15" height="15" viewBox="0 0 24 24" fill="#edc23b" stroke="#caa12a" stroke-width="1"><path d="M14 4c4 1 6 4 6 8s-3 8-8 8-8-4-8-8c0-3 2-6 5-7 1 1 2 1 3 0z"/></svg></div>
+                <div class="tt">Assistent</div>
+                <div class="td">Stel je vraag of meld iets</div>
+                <div class="go">&rarr;</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROBLEEM ===================== -->
+<section id="probleem">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Het probleem</span>
+      <h2>Huurders verwachten meer, terwijl de beheerder vastloopt.</h2>
+      <p>Verwachtingen rond service en bereikbaarheid stijgen, terwijl bestaande tools daar niet op aansluiten. Dat kost de beheerder tijd en de huurder geduld.</p>
+    </div>
+    <div class="cards-3 stagger reveal">
+      <div class="pcard">
+        <div class="big">40,6<small>%</small></div>
+        <h3>Meldingen komen incompleet binnen</h3>
+        <p>Zonder omschrijving, locatie of foto. De beheerder moet de huurder opnieuw benaderen voordat er iets kan gebeuren.</p>
+      </div>
+      <div class="pcard">
+        <div class="big">~30<small>%</small></div>
+        <h3>Standaardvragen vreten tijd</h3>
+        <p>Een groot deel van de binnenkomende berichten zijn terugkerende vragen die versnipperd via mail, telefoon en app binnenkomen.</p>
+      </div>
+      <div class="pcard">
+        <div class="big">5,9<small>/10</small></div>
+        <h3>Bestaande apps stellen teleur</h3>
+        <p>Huurders waarderen het huidige platform met een 5,9. Geen statusweergave, geen meertaligheid, geen zelfservice buiten kantooruren.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== OPLOSSING ===================== -->
+<section id="oplossing" class="solution">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">De oplossing</span>
+      <h2>Drie AI-functies in één applicatie.</h2>
+      <p>De app stuurt elke melding compleet door, beantwoordt standaardvragen zelfstandig en geeft de beheerder grip op wat er speelt.</p>
+    </div>
+    <div class="feat-grid stagger reveal">
+      <div class="fcard">
+        <div class="ficon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#edc23b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <h3>Slimme meldingsroute</h3>
+        <p>De route stuurt een reparatieverzoek pas door als de omschrijving, de locatie en het beeldmateriaal compleet zijn. De beheerder begint meteen met de juiste informatie.</p>
+        <span class="more">Elke melding compleet &rarr;</span>
+      </div>
+      <div class="fcard">
+        <div class="ficon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#edc23b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8A8.38 8.38 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5z"/></svg></div>
+        <h3>AI-chatbot per complex</h3>
+        <p>De chatbot beantwoordt vragen over het complex en het eigen huurcontract zelfstandig, 24 uur per dag, in het Nederlands en Engels. Persoonsgegevens bereiken het AI-model alleen wanneer dat strikt nodig is.</p>
+        <span class="more">24/7 zelfservice &rarr;</span>
+      </div>
+      <div class="fcard">
+        <div class="ficon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#edc23b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></svg></div>
+        <h3>Beheerdersdashboard</h3>
+        <p>Alle meldingsdata per complex en per thema op één plek. De beheerder ziet patronen, registreert elk chatgesprek en stuurt gericht bij.</p>
+        <span class="more">Grip op je portefeuille &rarr;</span>
+      </div>
+    </div>
+    <div class="pillrow reveal">
+      <span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Onafhankelijk, koppelbaar naast je ERP</span>
+      <span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Privacy by Design</span>
+      <span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Nederlands &amp; Engels</span>
+      <span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Documentenbox per complex</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RESULTATEN ===================== -->
+<section id="resultaten" class="on-dark" style="background:var(--cream);">
+  <div class="wrap">
+    <div class="results">
+      <div class="glow"></div>
+      <div class="inner" style="padding:84px 56px;">
+        <div class="sec-head reveal" style="margin-bottom:46px;">
+          <span class="eyebrow on-dark">Bewezen bij Lemon Suites</span>
+          <h2 style="color:#fff;">De cijfers van een echte beheerder.</h2>
+          <p>Lemon Suites zette de applicatie in bij complex Haagdijk. Dit zijn de resultaten ten opzichte van de oude werkwijze.</p>
+        </div>
+        <div class="stat-grid stagger reveal">
+          <div class="stat">
+            <div class="num">0%</div>
+            <div class="lab">incomplete meldingen</div>
+            <div class="was">was 40,6%</div>
+          </div>
+          <div class="stat">
+            <div class="num">100%</div>
+            <div class="lab">standaardvragen door de chatbot afgehandeld</div>
+            <div class="was">zonder tussenkomst van een medewerker</div>
+          </div>
+          <div class="stat">
+            <div class="num">8,2</div>
+            <div class="lab">gemiddelde waardering van huurders</div>
+            <div class="was">was 5,9 voor de oude app</div>
+          </div>
+          <div class="stat">
+            <div class="num">+40,7%</div>
+            <div class="lab">hogere tevredenheid over de dienstverlening</div>
+            <div class="was">van 5,4 naar 7,6 op 10</div>
+          </div>
+        </div>
+        <div class="quote reveal">
+          <p>"De grootste winst zit in de wisselwerking: standaardvragen worden zelf afgehandeld en elke melding komt compleet binnen, zodat een medewerker sneller handelt en tijd overhoudt voor complexere zaken."</p>
+          <div class="src">Jorn Snijkers, operationeel manager Lemon Suites</div>
+        </div>
+        <p class="foot reveal">Resultaten gemeten op complex Haagdijk (Meerkollaan 8&ndash;122, Eindhoven), tegenover de voormeting onder huurders en meldingen via het oude platform.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WERKWIJZE + PRIJS ===================== -->
+<section id="prijs">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Werkwijze &amp; prijs</span>
+      <h2>Snel ingericht, betaalbaar geschaald.</h2>
+      <p>Je neemt de app als losse module af. Geen overstap van je ERP-systeem, geen grote investering vooraf.</p>
+    </div>
+
+    <div class="steps stagger reveal">
+      <div class="step">
+        <div class="n">1</div>
+        <h3>Kennisbank inrichten</h3>
+        <p>Per complex vullen we de chatbot met complexdata: huishoudelijk reglement, handleidingen en contractinformatie. Inrichting duurt circa twee werkdagen.</p>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <h3>Chatbot per complex live</h3>
+        <p>Elke huurder krijgt toegang via verificatie op het eigen woonadres. De chatbot beantwoordt vragen en de meldingsroute staat klaar.</p>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <h3>Onderhoud en bijsturing</h3>
+        <p>We actualiseren de kennisbank en optimaliseren de antwoorden, zodat de output relevant en accuraat blijft voor huurder en beheerder.</p>
+      </div>
+    </div>
+
+    <div class="price-wrap reveal">
+      <div class="price-card">
+        <div class="glow"></div>
+        <div class="pc-in">
+          <h3 class="ptitle serif">Abonnement</h3>
+          <div class="psub">Per woning per maand, naar rato van je portefeuille.</div>
+          <div class="amount"><span class="v">&euro;1,75</span><span class="u">per woning / maand</span></div>
+          <ul>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Alle functies: meldingsroute, AI-chatbot en dashboard</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Nederlands en Engels, 24/7 zelfservice</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Hosting, onderhoud en doorontwikkeling inbegrepen</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> AVG-conform op Europese tooling</li>
+          </ul>
+        </div>
+      </div>
+      <div class="setup-card">
+        <h3 class="serif">Eenmalig opstarttarief</h3>
+        <div class="ss">Voor het inrichten van de kennisbank en chatbot, meelopend met de complexgrootte.</div>
+        <div class="tier"><div class="tl">Klein complex <span>tot 20 woningen</span></div><div class="tv">&euro;250</div></div>
+        <div class="tier"><div class="tl">Middelgroot complex <span>20 tot 50 woningen</span></div><div class="tv">&euro;350</div></div>
+        <div class="tier"><div class="tl">Groot complex <span>vanaf 50 woningen</span></div><div class="tv">&euro;500</div></div>
+        <div style="margin-top:auto;padding-top:24px;">
+          <a href="#contact" class="btn btn-ghost-light" style="width:100%;justify-content:center;">Vraag een offerte op maat</a>
+        </div>
+      </div>
+    </div>
+    <p class="price-note reveal">Genoemde bedragen zijn indicatief en exclusief btw. Voor Haagdijk met 58 woningen verdient de app zich al terug bij ongeveer 1,6 uur bespaarde beheerderstijd per maand.</p>
+  </div>
+</section>
+
+<!-- ===================== OVER + CONTACT ===================== -->
+<section id="contact" class="about">
+  <div class="wrap about-grid">
+    <div class="reveal">
+      <span class="eyebrow">Over de oplossing</span>
+      <h2>Onafhankelijk ontwikkeld, in de praktijk getoetst.</h2>
+      <p>De applicatie is zelfstandig ontwikkeld door Imo Hermkens als afstudeeronderzoek aan Fontys Hogeschool Economie en Communicatie, en gevalideerd in samenwerking met Lemon Suites als eerste afnemer en testomgeving.</p>
+      <p>De software wordt onafhankelijk aangeboden als SaaS voor groeiende MKB-vastgoedbeheerders die een eigen AI-traject zelden zelfstandig rond krijgen. Lemon Suites bezit het product niet, maar dient als referentie van wat de app in de praktijk oplevert.</p>
+    </div>
+    <div class="cta-box reveal">
+      <div class="glow"></div>
+      <div class="ci">
+        <h3 class="serif">Benieuwd wat dit voor jouw portefeuille betekent?</h3>
+        <p>Plan een demo en bekijk hoe de app aansluit op jouw complexen. We lopen de meldingsroute, de chatbot en het dashboard samen door.</p>
+        <a href="mailto:imo@lemonsuites.nl?subject=Demo%20huurdersapplicatie" class="btn btn-gold">Demo aanvragen <span class="arr">&rarr;</span></a>
+        <a class="mail" href="mailto:imo@lemonsuites.nl">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+          imo@lemonsuites.nl
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-top">
+      <div>
+        <a href="#top" class="brand">
+          <span class="brand-badge">Im</span>
+          <span class="brand-name">Imo's</span>
+        </a>
+        <p class="ft-tag">AI-ondersteunde huurdersapplicatie voor MKB-vastgoedbeheerders. Onafhankelijk, AVG-conform en gebouwd op Europese technologie.</p>
+      </div>
+      <div class="ft-links">
+        <a href="#probleem">Probleem</a>
+        <a href="#oplossing">Oplossing</a>
+        <a href="#resultaten">Resultaten</a>
+        <a href="#prijs">Prijs</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <span>&copy; 2026 Imo Hermkens. Beroepsproduct afstudeeronderzoek.</span>
+      <span>Deze site is indicatief en gebaseerd op de pilotresultaten bij Lemon Suites.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // sticky nav border
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 12);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // mobile menu
+  const toggle = document.getElementById('navToggle');
+  const links = document.getElementById('navlinks');
+  toggle.addEventListener('click', () => links.classList.toggle('open'));
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+
+  // scroll reveals
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal, .stagger').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
